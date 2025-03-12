@@ -8,10 +8,13 @@ import {
   Delete,
   Patch,
 } from '@nestjs/common';
+import { Public } from 'src/common/decorators/public.decarator';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
+
+@Public()
 @Controller('product')
 export class ProductController {
   constructor(private readonly productSerice: ProductService) {}

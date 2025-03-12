@@ -11,21 +11,19 @@ export class ProductService {
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
 
-  create(body: CreateProductDto): Promise<Product> {
-    const product = this.productRepository.create(body);
+  async create(body: CreateProductDto): Promise<Product> {
+    const product = await this.productRepository.create(body);
     return this.productRepository.save(product);
   }
 
-  findAll(): Promise<Product[]> {
-    return this.productRepository.find();
+  async findAll(): Promise<Product[]> {
+    return await this.productRepository.find();
   }
 
-  findOne(id: string): Promise<Product | null> {
-    return this.productRepository.findOneBy({ id });
+  async findOne(id: string): Promise<Product | null> {
+    return await this.productRepository.findOneBy({ id });
   }
   async update(body: UpdateProductDto, id: string): Promise<Product | null> {
-    console.log(body);
-
     await this.productRepository.update(id, body);
     return this.productRepository.findOneBy({ id });
   }

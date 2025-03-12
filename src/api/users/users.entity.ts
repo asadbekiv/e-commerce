@@ -1,22 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Photo {
+export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 500 })
-  name: string;
+  @Column()
+  firstName: string;
 
-  @Column('text')
-  description: string;
+  @Column({ nullable: true })
+  lastName: string;
 
   @Column()
-  filename: string;
-
-  @Column('int')
-  views: number;
-
-  @Column()
-  isPublished: boolean;
+  password: string;
 }
