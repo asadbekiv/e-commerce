@@ -7,16 +7,20 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './api/auth/auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { LoggerMiddleware } from './middlewares/request-logger';
-import { CategoryService } from './api/category/category.service';
 import { CategoryModule } from './api/category/category.module';
-import { BasketController } from './api/basket/basket.controller';
 import { BasketModule } from './api/basket/basket.module';
-import { OrderService } from './api/order/order.service';
 import { OrderModule } from './api/order/order.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, DatabaseModule, ProductModule, CategoryModule, BasketModule, OrderModule],
-  controllers: [BasketController],
+  imports: [
+    UsersModule,
+    AuthModule,
+    DatabaseModule,
+    BasketModule,
+    OrderModule,
+    CategoryModule,
+    ProductModule,
+  ],
   providers: [
     {
       provide: APP_GUARD,
@@ -26,8 +30,6 @@ import { OrderModule } from './api/order/order.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    CategoryService,
-    OrderService,
   ],
 })
 export class AppModule implements NestModule {

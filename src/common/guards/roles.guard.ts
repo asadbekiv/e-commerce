@@ -1,21 +1,36 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { Role } from '../enums/role.enum';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private jwtService: JwtService,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+    const requiredRoles = this.reflector.get<string[]>(
+      'roles',
       context.getHandler(),
-      context.getClass(),
-    ]);
-    if (!requiredRoles) {
-      return true;
+    );
+    if (!requiredRoles) return true;
+
+    const request = context.switchToHttp().getRequest();
+    const authHeader = request.headers.authorization;
+    if (!authHeader) throw new ForbiddenException('No token provided');
+
+    const token = authHeader.split(' ')[1];
+    const decoded = this.jwtService.verify(token);
+
+    if (!decoded || !requiredRoles.includes(decoded.role)) {
+      throw new ForbiddenException('Access denied.Only for Admins !');
     }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    return true;
   }
 }

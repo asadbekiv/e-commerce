@@ -7,21 +7,27 @@ import {
   Param,
   Delete,
   Patch,
+  NotFoundException,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decarator';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 
-@Public()
 @Controller('product')
 export class ProductController {
   constructor(private readonly productSerice: ProductService) {}
 
   @Post()
-  create(@Body() body: CreateProductDto) {
-    return this.productSerice.create(body);
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }]))
+  create(
+    @Body() body: CreateProductDto,
+    @UploadedFiles() files: { images?: Express.Multer.File[] },
+  ) {
+    return this.productSerice.create(body, files.images);
   }
 
   @Get()
@@ -35,11 +41,17 @@ export class ProductController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }]))
   async update(
     @Body() body: UpdateProductDto,
     @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFiles() files: { images?: Express.Multer.File[] },
   ) {
-    await this.productSerice.update(body, id);
+    const updatedProduct = await this.productSerice.findOne(id);
+    if (!updatedProduct) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return await this.productSerice.update(id, body, files.images);
   }
 
   @Delete(':id')

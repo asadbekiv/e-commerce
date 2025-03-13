@@ -3,9 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Users } from './users.entity';
+import { Users } from './entity/users.entity';
 import { UpdateUsertDto } from './dto/update-user.dto';
-// export type User = any;
 
 @Injectable()
 export class UsersService {
@@ -32,13 +31,20 @@ export class UsersService {
 
   async getAll(): Promise<Users[]> {
     const users = await this.userRepository.find();
-    console.log(users);
 
     return users;
   }
 
   async getOne(id: string): Promise<Users> {
     const user = await this.userRepository.findOneBy({ id });
+    return user;
+  }
+
+  async getByUsername(username: string): Promise<Users> {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new NotFoundException(`User with username ${username} not found`);
+    }
     return user;
   }
 

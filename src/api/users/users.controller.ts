@@ -8,20 +8,22 @@ import {
   Body,
   NotFoundException,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decarator';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateUsertDto } from './dto/update-user.dto';
+import { Role } from 'src/common/enums/role.enum';
 
-@Public()
 @Controller('users')
 export class UsersController {
   constructor(private readonly userSerice: UsersService) {}
 
+  @Roles(Role.Admin)
   @Get()
   async getAll() {
     return await this.userSerice.getAll();
   }
 
+  @Roles(Role.Admin)
   @Get(':id')
   async getOne(@Param('id', ParseUUIDPipe) id: string) {
     const user = await this.userSerice.getOne(id);
@@ -43,6 +45,7 @@ export class UsersController {
     return updatedUser;
   }
 
+  @Roles(Role.Admin)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     const deletedUser = await this.userSerice.remove(id);

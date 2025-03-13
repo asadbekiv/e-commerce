@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
-console.log(process.env.DATABASE_USERNAME);
 
 export const databaseProviders = [
   {

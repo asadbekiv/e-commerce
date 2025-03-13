@@ -1,9 +1,10 @@
 import {
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
+  IsUUID,
+  IsArray,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -15,15 +16,20 @@ export class CreateProductDto {
   @IsNotEmpty()
   description: string;
 
-  @IsNumber()
+
+  @IsNotEmpty()
+  @IsOptional()
   price: string;
 
   @IsOptional()
   stock: string;
 
   @IsNotEmpty()
-  category_id: number;
+  @IsUUID()
+  category_id: string;
 
   @IsOptional()
-  image: string;
+  @IsArray()
+  @IsString({ each: true })
+  image?: string[];
 }
